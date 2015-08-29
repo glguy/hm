@@ -4,8 +4,6 @@
 -- | This module provides instances that are missing from
 -- other libraries
 --
--- > instance MonadIO m => MonadIO (EitherKT e m) where
--- > instance MonadIO m => MonadIO (IntBindingT e m) where
 -- > instance Read1 f => Read (Fix f) where
 -- > instance Eq1 t => Eq (UTerm t) where
 -- > instance Unifiable [] where
@@ -14,21 +12,9 @@
 module HM.Orphans () where
 
 import Control.Lens
-import Control.Monad.EitherK
-import Control.Monad.IO.Class
-import Control.Monad.Trans.Class
 import Control.Unification
-import Control.Unification.IntVar
 import Data.Functor.Fixedpoint
 import Prelude.Extras
-
--- | Lifted instance
-instance MonadIO m => MonadIO (EitherKT e m) where
-  liftIO = lift . liftIO
-
--- | Lifted instance
-instance MonadIO m => MonadIO (IntBindingT e m) where
-  liftIO = lift . liftIO
 
 -- | Silently adds @Fix@ constructors
 instance Read1 f => Read (Fix f) where

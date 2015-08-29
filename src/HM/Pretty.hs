@@ -44,9 +44,12 @@ instance (Pretty v, Pretty t) => Pretty (Poly v t) where
     . prettyPrec 1 t
 
 instance (Pretty v, Pretty t) => Pretty1 (MonoF v t) where
-  prettyPrec1 p (MonoVarF v) = prettyPrec p v
-  prettyPrec1 p (MonoAppF c []) = prettyPrec p c
-  prettyPrec1 p (MonoAppF c ts)
+  prettyPrec1 = prettyPrec
+
+instance (Pretty v, Pretty t, Pretty r) => Pretty (MonoF v t r) where
+  prettyPrec p (MonoVarF v) = prettyPrec p v
+  prettyPrec p (MonoAppF c []) = prettyPrec p c
+  prettyPrec p (MonoAppF c ts)
     = showParen (p > 10)
     $ prettyPrec 10 c
     . foldr (.) id (map (\x -> showChar ' ' . prettyPrec 11 x) ts)
