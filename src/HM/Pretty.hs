@@ -1,6 +1,13 @@
 -- | This module provides pretty-printing functionality. It works like
 -- the 'Show' class, but it doesn't presume to construct Haskell syntax.
-module HM.Pretty where
+module HM.Pretty
+  ( -- * Classes
+    Pretty(..)
+  , Pretty1(..)
+
+  , -- * Operations
+    pretty
+  ) where
 
 import Data.Functor.Fixedpoint
 

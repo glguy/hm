@@ -28,7 +28,7 @@ data Poly t v = Poly [v] (Mono t v)
 data UPoly t v = UPoly [v] (UMono t v)
   deriving (Show, Eq, Generic)
 
--- | Lens for accessing the type-part of a 'UPoly'
+-- | Lens for accessing the bindings-part of a 'UPoly'
 upolyBinds :: Lens' (UPoly t v) [v]
 upolyBinds f (UPoly xs t) = (`UPoly` t) <$> f xs
 

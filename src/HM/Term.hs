@@ -4,7 +4,10 @@
 -- a language's primitives and binders. The primitives and
 -- binders are then extended to support functions and named
 -- expressions.
-module HM.Term where
+module HM.Term
+  ( -- * Types
+    Term(..)
+  ) where
 
 import Control.Applicative
 import Control.Lens

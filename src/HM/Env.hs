@@ -3,7 +3,14 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 -- | This module provides the typing environment used in the type checker.
-module HM.Env where
+module HM.Env
+  ( -- * Types
+    Env
+
+  , -- * Operations
+    emptyEnv
+  , envFromMap
+  ) where
 
 import           Control.Lens
 import           Data.Map (Map)

@@ -1,6 +1,9 @@
 -- | This module provides a symbol type for easy to read
 -- binders and type variables.
-module HM.Sym where
+module HM.Sym
+  ( -- * Types
+    Sym(..)
+  ) where
 
 import Control.Lens
 import Data.String

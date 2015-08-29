@@ -11,7 +11,7 @@
 -- > instance Unifiable [] where
 -- > instance Traversable t => Plated (UTerm t v) where
 
-module HM.Orphans where
+module HM.Orphans () where
 
 import Control.Lens
 import Control.Monad.EitherK

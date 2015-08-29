@@ -2,7 +2,28 @@
 {-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, DeriveGeneric #-}
 
 -- | This module provides parameterized monomorphic types.
-module HM.Mono where
+module HM.Mono
+  ( -- * Types shape
+    MonoF(..)
+
+  , -- * Without unification variables
+    Mono
+  , pattern MonoApp
+  , pattern MonoVar
+
+  , -- * With unification variables
+    UMono
+  , pattern UMonoApp
+  , pattern UMonoVar
+
+  , -- * Types with functions
+    TypeCon(..)
+  , (-->)
+
+  , -- * Operations
+    substUMono
+  , umonoFreeVars
+  ) where
 
 import           Control.Lens
 import           Control.Unification
