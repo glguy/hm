@@ -3,8 +3,8 @@
 
 name:                hm
 version:             0.1
-synopsis:            Generic implementation of Hindley-Milner type inference
--- description:         
+synopsis:            Hindley-Milner type inference
+description:         Generic implementation of Hindley-Milner type inference using the unification-fd package
 homepage:            https://github.com/glguy/hm
 license:             MIT
 license-file:        LICENSE
@@ -16,6 +16,11 @@ build-type:          Simple
 extra-source-files:  README.markdown
 cabal-version:       >=1.10
 tested-with:         GHC == 7.10.1
+bug-reports:         https://github.com/glguy/hm/issues
+
+source-repository head
+  type: git
+  location: git://github.com/glguy/hm
 
 library
   ghc-options: -Wall
