@@ -92,9 +92,11 @@ inferType env term =
          return (UMonoApp mkFunction [argType,t1])
 
     Let x e1 e2 ->
-      do t1 <- inferType env e1
-         t1' <- generalize env t1
-         let env' = set (at x) (Just t1') env
+      do t  <- freshType
+         t1 <- inferType (set (at x) (Just (UPoly [] t)) env) e1
+         t2 <- t =:= t1
+         t3 <- generalize env t2
+         let env' = set (at x) (Just t3) env
          inferType env' e2
 
 -- | Generalize a type by universally quantifying the
