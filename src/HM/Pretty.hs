@@ -11,6 +11,7 @@ module HM.Pretty
 
 import Data.Functor.Fixedpoint
 
+import HM.Annotation
 import HM.Term
 import HM.Poly
 import HM.Mono
@@ -54,23 +55,26 @@ instance (Pretty v, Pretty t, Pretty r) => Pretty (MonoF v t r) where
     $ prettyPrec 10 c
     . foldr (.) id (map (\x -> showChar ' ' . prettyPrec 11 x) ts)
 
-instance (Pretty t, Pretty v) => Pretty (Term t v) where
-  prettyPrec p (Atom a)
+instance (Pretty t, Pretty v) => Pretty1 (TermF t v) where
+  prettyPrec1 = prettyPrec
+
+instance (Pretty t, Pretty v, Pretty r) => Pretty (TermF t v r) where
+  prettyPrec p (AtomF a)
     = prettyPrec p a
-  prettyPrec p (x :$ y)
+  prettyPrec p (AppF x y)
     = showParen (p > 10)
     $ prettyPrec 10 x
     . showChar ' '
     . prettyPrec 11 y
-  prettyPrec p (Var v)
+  prettyPrec p (VarF v)
     = prettyPrec p v
-  prettyPrec p (Abs v x)
+  prettyPrec p (AbsF v x)
     = showParen (p > 0)
     $ showString "λ "
     . prettyPrec 11 v
     . showString ". "
     . prettyPrec 0 x
-  prettyPrec p (Let v x y)
+  prettyPrec p (LetF v x y)
     = showParen (p > 0)
     $ showString "let "
     . prettyPrec 11 v
@@ -82,3 +86,13 @@ instance (Pretty t, Pretty v) => Pretty (Term t v) where
 
 instance Pretty Sym where
   prettyPrec _ (Sym x) = showString x
+
+instance (Pretty a, Pretty1 f) => Pretty1 (AnnotF a f) where
+  prettyPrec1 = prettyPrec
+
+instance (Pretty a, Pretty1 f, Pretty r) => Pretty (AnnotF a f r) where
+  prettyPrec p (AnnotF a r)
+    = showParen (p > 0)
+    $ prettyPrec1 1 r
+    . showString " :: "
+    . prettyPrec 1 a

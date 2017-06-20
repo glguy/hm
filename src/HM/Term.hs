@@ -1,4 +1,5 @@
 {-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, DeriveGeneric #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 -- | This module provides a term type that is parameterized on
 -- a language's primitives and binders. The primitives and
@@ -6,36 +7,65 @@
 -- expressions.
 module HM.Term
   ( -- * Types
-    Term(..)
+    TermF(..)
+  , Term
+  , pattern Atom
+  , pattern (:$)
+  , pattern Var
+  , pattern Abs
+  , pattern Let
+
+  , -- * Operations
+    mapAtom
   ) where
 
-import Control.Applicative
 import Control.Lens
+import Data.Functor.Fixedpoint
 import GHC.Generics
+import Prelude.Extras
+
+type Term t v = Fix (TermF t v)
 
 -- | Terms parameterized by the type of primitive in the language
 -- and the types of binders. The primitives are extended to add
 -- support for abstraction, application, and naming.
-data Term t v
-  = Atom t               -- ^ Primitive operation
-  | Term t v :$ Term t v -- ^ Function application
-  | Var v                -- ^ Variable
-  | Abs v (Term t v)     -- ^ Abstraction
-  | Let v (Term t v) (Term t v) -- ^ Let binding
-  deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic)
+data TermF t v r
+  = AtomF t    -- ^ Primitive operation
+  | AppF r r    -- ^ Function application
+  | VarF v     -- ^ Variable
+  | AbsF v r   -- ^ Abstraction
+  | LetF v r r -- ^ Let binding
+  deriving (Read, Show, Eq, Ord, Functor, Foldable, Traversable, Generic, Generic1)
+
+pattern Atom :: t -> Term t v
+pattern Atom t = Fix (AtomF t)
+
+pattern (:$) :: Term t v -> Term t v -> Term t v
+pattern f :$ x = Fix (AppF f x)
+
+pattern Var :: v -> Term t v
+pattern Var v  = Fix (VarF v)
+
+pattern Abs :: v -> Term t v -> Term t v
+pattern Abs v t = Fix (AbsF v t)
+
+pattern Let :: v -> Term t v -> Term t v -> Term t v
+pattern Let v t1 t2 = Fix (LetF v t1 t2)
+
+instance (Eq t, Eq v) => Eq1 (TermF t v)
+instance (Ord t, Ord v) => Ord1 (TermF t v)
+instance (Show t, Show v) => Show1 (TermF t v)
 
 infixl 1 :$
 
-instance Bifunctor Term where
-  bimap f _ (Atom t) = Atom (f t)
-  bimap f g (x :$ y) = bimap f g x :$ bimap f g y
-  bimap _ g (Var v) = Var (g v)
-  bimap f g (Abs x y) = Abs (g x) (bimap f g y)
-  bimap f g (Let x y z) = Let (g x) (bimap f g y) (bimap f g z)
+termAtomF :: Traversal (TermF t v r) (TermF t' v r) t t'
+termAtomF f t =
+  case t of
+    AtomF a      -> AtomF <$> f a
+    AppF t1 t2   -> pure (AppF t1 t2)
+    VarF v       -> pure (VarF v)
+    AbsF v r     -> pure (AbsF v r)
+    LetF v t1 t2 -> pure (LetF v t1 t2)
 
-instance Plated (Term t v) where
-  plate f (x :$ y) = liftA2 (:$) (f x) (f y)
-  plate f (Let x y z) = liftA2 (Let x) (f y) (f z)
-  plate f (Abs x y) = fmap (Abs x) (f y)
-  plate _ t@Atom{} = pure t
-  plate _ t@Var{} = pure t
+mapAtom :: (a -> b) -> Term a v -> Term b v
+mapAtom f = cata (Fix . over termAtomF f)

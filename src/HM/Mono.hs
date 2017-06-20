@@ -47,8 +47,11 @@ import           HM.Orphans()
 -- @
 type Mono t v = Fix (MonoF t v)
 
+pattern MonoApp :: t -> [Mono t v] -> Mono t v
 pattern MonoApp f xs = Fix (MonoAppF f xs)
-pattern MonoVar v    = Fix (MonoVarF v)
+
+pattern MonoVar :: v -> Mono t v
+pattern MonoVar v = Fix (MonoVarF v)
 
 -- | Monomorphic types with unification variables
 --
@@ -60,8 +63,11 @@ pattern MonoVar v    = Fix (MonoVarF v)
 -- @
 type UMono t v = UTerm (MonoF t v) IntVar
 
+pattern UMonoApp :: t -> [UMono t v] -> UMono t v
 pattern UMonoApp f xs = UTerm (MonoAppF f xs)
-pattern UMonoVar v    = UTerm (MonoVarF v)
+
+pattern UMonoVar :: v -> UMono t v
+pattern UMonoVar v = UTerm (MonoVarF v)
 
 -- | Shape of monomorphic types
 data MonoF t v r

@@ -6,7 +6,6 @@
 -- maps, and logical types.
 module HM.Example where
 
-import           Data.Bifunctor
 import qualified Data.Map as Map
 
 import           HM.Term
@@ -77,11 +76,12 @@ demo :: Term MyTerm Sym -> IO ()
 demo expr =
   do putStrLn $ pretty expr
      putStrLn "::"
-     let res = typecheck Map.empty $ first termType expr
+     let res = typecheck Map.empty termType expr
      case res of
        Left e -> print e
-       Right r -> putStrLn (pretty r)
-
+       Right (s,r) ->
+         do putStrLn (pretty s)
+            putStrLn (pretty r)
 
 instance Pretty MyType where
   prettyPrec _ LogicType        = showString "logic"
@@ -95,4 +95,3 @@ instance Pretty MyTerm where
   prettyPrec _ Equal            = showString "equal"
   prettyPrec _ Select           = showString "select"
   prettyPrec p (LInt x)         = prettyPrec p x
-
